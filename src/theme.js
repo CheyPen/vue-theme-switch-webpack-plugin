@@ -16,14 +16,25 @@ Object.defineProperties(theme, {
       const newVal = String(val || 'default');
       if (oldVal === newVal) return;
       store.set(newVal);
-      window.dispatchEvent(new CustomEvent('theme-change', { bubbles: true, detail: { newVal, oldVal } }));
+      window.dispatchEvent(
+        new CustomEvent('theme-change', {
+          bubbles: true,
+          detail: { newVal, oldVal },
+        }),
+      );
     },
   },
+  __alreadyLoadedChunks: { value: [] },
   __loadChunkCss: {
     enumerable: false,
     value: function loadChunkCss(chunkId) {
       const id = `${chunkId}#${theme.style}`;
+      if (!theme.__alreadyLoadedChunks.includes(chunkId)) theme.__alreadyLoadedChunks.push(chunkId)
       if (resource && resource.chunks) {
+        if (theme.style !== 'default') {
+          const defaultId = ''.concat(chunkId, '#default');
+          util.createThemeLink(resource.chunks[defaultId]);
+        }
         util.createThemeLink(resource.chunks[id]);
       }
     },
@@ -48,9 +59,11 @@ if (resource) {
     const newTheme = e.detail.newVal || 'default';
     const oldTheme = e.detail.oldVal || 'default';
 
-    const updateThemeLink = (obj) => {
+    const updateThemeLink = (obj, force) => {
       if (obj.theme === newTheme && newTheme !== 'default') {
-        util.createThemeLink(obj);
+        if (force || theme.__alreadyLoadedChunks.includes(obj.id)) {
+          util.createThemeLink(obj);
+        }
       } else if (obj.theme === oldTheme && oldTheme !== 'default') {
         util.removeThemeLink(obj);
       }
@@ -58,7 +71,7 @@ if (resource) {
 
     if (resource.entry) {
       Object.keys(resource.entry).forEach((id) => {
-        updateThemeLink(resource.entry[id]);
+        updateThemeLink(resource.entry[id], true);
       });
     }
 

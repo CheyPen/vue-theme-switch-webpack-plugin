@@ -1,13 +1,13 @@
-const head = document.getElementsByTagName('head')[0];
+const head = document.getElementsByTagName("head")[0];
 
 export function createLinkElement(attrs) {
-  const el = document.createElement('link');
-  el.rel = 'stylesheet';
-  el.type = 'text/css';
+  const el = document.createElement("link");
+  el.rel = "stylesheet";
+  el.type = "text/css";
   el.href = attrs.href;
 
   Object.keys(attrs).forEach((key) => {
-    if (key === 'href') return;
+    if (key === "href") return;
     el.setAttribute(key, attrs[key]);
   });
 
@@ -18,10 +18,10 @@ export function createLinkElement(attrs) {
 export function createThemeLink(theme) {
   if (!theme) return;
   if (theme.$el) {
-    theme.$el.setAttribute('href', theme.href);
+    theme.$el.setAttribute("href", "/" + theme.href);
   } else {
     // eslint-disable-next-line no-param-reassign
-    theme.$el = createLinkElement({ href: theme.href });
+    theme.$el = createLinkElement({ href: "/" + theme.href });
   }
 }
 

@@ -1,7 +1,8 @@
 {
-    "name": "vue-theme-switch-webpack-plugin",
+    "name": "@bitmain/vue-theme-switch-webpack-plugin",
     "version": "1.0.0",
     "main": "lib/index.js",
+    "license": "ISC",
     "scripts": {
         "dev:example": "webpack-dev-server --config=example/build/webpack.dev.js",
         "build:example": "webpack-cli --config=example/build/webpack.build.js ",

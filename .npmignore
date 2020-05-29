@@ -1,0 +1,8 @@
+/docs
+/node_modules
+/example
+.eslintignore
+.gitignore
+.eslintrc.js
+.package-lock.json
+yarn.lock

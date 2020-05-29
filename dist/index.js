@@ -99,7 +99,11 @@ return /******/ (function(modules) { // webpackBootstrap
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+// ESM COMPAT FLAG
 __webpack_require__.r(__webpack_exports__);
+
+// EXPORTS
+__webpack_require__.d(__webpack_exports__, "install", function() { return /* binding */ install; });
 
 // CONCATENATED MODULE: ./src/store.js
 var key = '__current_style__';
@@ -127,14 +131,14 @@ try {
 
 /* harmony default export */ var src_store = (store);
 // CONCATENATED MODULE: ./src/util.js
-var head = document.getElementsByTagName('head')[0];
+var head = document.getElementsByTagName("head")[0];
 function createLinkElement(attrs) {
-  var el = document.createElement('link');
-  el.rel = 'stylesheet';
-  el.type = 'text/css';
+  var el = document.createElement("link");
+  el.rel = "stylesheet";
+  el.type = "text/css";
   el.href = attrs.href;
   Object.keys(attrs).forEach(function (key) {
-    if (key === 'href') return;
+    if (key === "href") return;
     el.setAttribute(key, attrs[key]);
   });
   head.appendChild(el);
@@ -144,11 +148,11 @@ function createThemeLink(theme) {
   if (!theme) return;
 
   if (theme.$el) {
-    theme.$el.setAttribute('href', theme.href);
+    theme.$el.setAttribute("href", "/" + theme.href);
   } else {
     // eslint-disable-next-line no-param-reassign
     theme.$el = createLinkElement({
-      href: theme.href
+      href: "/" + theme.href
     });
   }
 }
@@ -186,12 +190,21 @@ Object.defineProperties(theme, {
       }));
     }
   },
+  __alreadyLoadedChunks: {
+    value: []
+  },
   __loadChunkCss: {
     enumerable: false,
     value: function loadChunkCss(chunkId) {
       var id = "".concat(chunkId, "#").concat(theme.style);
+      if (!theme.__alreadyLoadedChunks.includes(chunkId)) theme.__alreadyLoadedChunks.push(chunkId);
 
       if (resource && resource.chunks) {
+        if (theme.style !== 'default') {
+          var defaultId = ''.concat(chunkId, '#default');
+          createThemeLink(resource.chunks[defaultId]);
+        }
+
         createThemeLink(resource.chunks[id]);
       }
     }
@@ -217,9 +230,11 @@ if (resource) {
     var newTheme = e.detail.newVal || 'default';
     var oldTheme = e.detail.oldVal || 'default';
 
-    var updateThemeLink = function updateThemeLink(obj) {
+    var updateThemeLink = function updateThemeLink(obj, force) {
       if (obj.theme === newTheme && newTheme !== 'default') {
-        createThemeLink(obj);
+        if (force || theme.__alreadyLoadedChunks.includes(obj.id)) {
+          createThemeLink(obj);
+        }
       } else if (obj.theme === oldTheme && oldTheme !== 'default') {
         removeThemeLink(obj);
       }
@@ -227,7 +242,7 @@ if (resource) {
 
     if (resource.entry) {
       Object.keys(resource.entry).forEach(function (id) {
-        updateThemeLink(resource.entry[id]);
+        updateThemeLink(resource.entry[id], true);
       });
     }
 
@@ -242,7 +257,6 @@ if (resource) {
 window.$theme = theme;
 /* harmony default export */ var src_theme = (theme);
 // CONCATENATED MODULE: ./src/index.js
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "install", function() { return install; });
  // eslint-disable-next-line import/prefer-default-export
 
 function install(Vue) {
